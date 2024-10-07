@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Survey and Herbal Tea Recommendations</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        h2 { color: #4CAF50; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 8px; }
+        .btn { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; cursor: pointer; }
+        .btn:hover { background-color: #45a049; }
+        .recommendation { margin-top: 20px; padding: 20px; background-color: #e0f7e0; border-radius: 10px; }
+        .tea-section { margin-top: 20px; }
+        .tea-section h3 { color: #333; }
+        .tea-card { padding: 10px; background-color: #f0f0f0; margin-bottom: 10px; border-radius: 5px; }
+        .tea-card h4 { margin: 0; color: #4CAF50; }
+    </style>
+</head>
+<body>
+
+<h2>Health Survey</h2>
+<form id="healthSurveyForm">
+    <!-- Basic Information -->
+    <div class="form-group">
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required>
+    </div>
+
+    <div class="form-group">
+        <label for="weight">Weight (kg):</label>
+        <input type="number" id="weight" name="weight" required>
+    </div>
+
+    <div class="form-group">
+        <label for="height">Height (cm):</label>
+        <input type="number" id="height" name="height" required>
+    </div>
+
+    <!-- Additional Health Questions -->
+    <div class="form-group">
+        <label for="exercise">How many days a week do you exercise?</label>
+        <input type="number" id="exercise" name="exercise" required>
+    </div>
+
+    <div class="form-group">
+        <label for="waterIntake">How many glasses of water do you drink daily?</label>
+        <input type="number" id="waterIntake" name="waterIntake" required>
+    </div>
+
+    <div class="form-group">
+        <label for="sleep">How many hours do you sleep per night?</label>
+        <input type="number" id="sleep" name="sleep" required>
+    </div>
+
+    <div class="form-group">
+        <label for="diet">How would you describe your diet? (e.g., Balanced, High in junk food, Low in vegetables, etc.)</label>
+        <textarea id="diet" name="diet" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="medicalConditions">Do you have any medical conditions (e.g., Diabetes, Hypertension)?</label>
+        <textarea id="medicalConditions" name="medicalConditions"></textarea>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="button" class="btn" onclick="calculateBMI()">Submit and Get Recommendations</button>
+</form>
+
+<div id="recommendationSection" class="recommendation" style="display:none;">
+    <h3>Personalized Health Recommendations</h3>
+    <p id="bmiResult"></p>
+    <p id="exerciseRecommendation"></p>
+    <p id="waterIntakeRecommendation"></p>
+    <p id="sleepRecommendation"></p>
+    <p id="dietRecommendation"></p>
+
+    <!-- Recommended Teas Section -->
+    <div id="teaRecommendation" class="tea-section" style="display:none;">
+        <h3>Recommended Herbal Teas</h3>
+        <div id="teaList"></div>
+    </div>
+</div>
+
+<script>
+    // Function to calculate BMI and show personalized recommendations
+    function calculateBMI() {
+        // Get the form values
+        const age = document.getElementById('age').value;
+        const weight = document.getElementById('weight').value;
+        const height = document.getElementById('height').value;
+        const exercise = document.getElementById('exercise').value;
+        const waterIntake = document.getElementById('waterIntake').value;
+        const sleep = document.getElementById('sleep').value;
+        const diet = document.getElementById('diet').value;
+        const medicalConditions = document.getElementById('medicalConditions').value.toLowerCase();
+
+        // Calculate BMI
+        const heightInMeters = height / 100;
+        const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(2);
+
+        // Display BMI result and corresponding category
+        let bmiCategory = '';
+        if (bmi < 18.5) {
+            bmiCategory = 'Underweight';
+        } else if (bmi >= 18.5 && bmi <= 24.9) {
+            bmiCategory = 'Normal weight';
+        } else if (bmi >= 25 && bmi <= 29.9) {
+            bmiCategory = 'Overweight';
+        } else {
+            bmiCategory = 'Obese';
+        }
+        document.getElementById('bmiResult').innerText = `Your BMI is ${bmi}, which falls under the category: ${bmiCategory}.`;
+
+        // Personalized recommendations
+        generateRecommendations(exercise, waterIntake, sleep, diet, medicalConditions, bmiCategory);
+
+        // Show the recommendation section
+        document.getElementById('recommendationSection').style.display = 'block';
+    }
+
+    // Function to generate recommendations and suggested teas
+    function generateRecommendations(exercise, waterIntake, sleep, diet, medicalConditions, bmiCategory) {
+        let exerciseRecommendation = '';
+        let waterIntakeRecommendation = '';
+        let sleepRecommendation = '';
+        let dietRecommendation = '';
+
+        // Exercise recommendations
+        if (exercise < 3) {
+            exerciseRecommendation = 'You should aim to exercise at least 3-5 days a week to maintain optimal health.';
+        } else {
+            exerciseRecommendation = 'Great! You are getting a healthy amount of exercise. Keep it up!';
+        }
+        document.getElementById('exerciseRecommendation').innerText = exerciseRecommendation;
+
+        // Water intake recommendations
+        if (waterIntake < 8) {
+            waterIntakeRecommendation = 'You should drink at least 8 glasses of water daily to stay well-hydrated.';
+        } else {
+            waterIntakeRecommendation = 'Good job! You are maintaining adequate hydration.';
+        }
+        document.getElementById('waterIntakeRecommendation').innerText = waterIntakeRecommendation;
+
+        // Sleep recommendations
+        if (sleep < 7) {
+            sleepRecommendation = 'Try to get at least 7-9 hours of sleep per night for optimal health and well-being.';
+        } else {
+            sleepRecommendation = 'You are getting a good amount of sleep. Continue prioritizing rest!';
+        }
+        document.getElementById('sleepRecommendation').innerText = sleepRecommendation;
+
+        // Diet recommendations
+        if (diet.toLowerCase().includes('junk') || diet.toLowerCase().includes('low in vegetables')) {
+            dietRecommendation = 'Consider incorporating more whole foods, vegetables, and fruits into your diet. A balanced diet is essential for long-term health.';
+        } else {
+            dietRecommendation = 'Great! Your diet seems balanced. Keep making healthy food choices!';
+        }
+        document.getElementById('dietRecommendation').innerText = dietRecommendation;
+
+        // Tea recommendations based on BMI and medical conditions
+        const teaList = document.getElementById('teaList');
+        teaList.innerHTML = ''; // Clear previous tea suggestions
+
+        let recommendedTeas = [];
+
+        if (bmiCategory === 'Underweight') {
+            recommendedTeas.push(
+                generateTeaCard('Chamomile Tea', 'Calms the nerves, improves sleep, reduces anxiety', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 50 mg, Calcium: 1 mg, Iron: 0.1 mg'),
+                generateTeaCard('Dandelion Tea', 'Supports liver health, rich in vitamins A and C', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 200 mg, Potassium: 1.4 mg, Iron: 0.7 mg')
+            );
+        }
+
+        if (bmiCategory === 'Overweight' || bmiCategory === 'Obese') {
+            recommendedTeas.push(
+                generateTeaCard('Green Tea', 'Boosts metabolism, rich in antioxidants', '1 tsp of leaves in hot water for 2-3 minutes', 'Polyphenols: 240 mg, Calcium: 0.5 mg, Potassium: 1.7 mg'),
+                generateTeaCard('Oolong Tea', 'Helps with weight loss, improves fat burning', '1-2 tsp in hot water for 3-5 minutes', 'Polyphenols: 150 mg, Magnesium: 1 mg, Iron: 0.6 mg')
+            );
+        }
+
+        if (medicalConditions.includes('diabetes')) {
+            recommendedTeas.push(
+                generateTeaCard('Clitoria Ternatea Tea', 'Helps control blood sugar levels, rich in antioxidants', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 180 mg, Calcium: 5 mg, Iron: 0.2 mg'),
+                generateTeaCard('Fenugreek Tea', 'Lowers blood sugar, promotes insulin sensitivity', '1 tsp in hot water for 5 minutes', 'Polyphenols: 160 mg, Magnesium: 3 mg, Potassium: 5 mg')
+            );
+        }
+
+        if (medicalConditions.includes('hypertension')) {
+            recommendedTeas.push(
+                generateTeaCard('Hibiscus Tea', 'Lowers blood pressure, rich in antioxidants', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 300 mg, Calcium: 1 mg, Magnesium: 3 mg'),
+                generateTeaCard('Lavender Tea', 'Reduces stress and hypertension', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 120 mg, Potassium: 1 mg, Iron: 0.1 mg')
+            );
+        }
+
+        if (medicalConditions.includes('digestive issues')) {
+            recommendedTeas.push(
+                generateTeaCard('Peppermint Tea', 'Improves digestion, reduces bloating', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 80 mg, Potassium: 1.3 mg, Calcium: 0.2 mg'),
+                generateTeaCard('Ginger Tea', 'Aids digestion, reduces nausea', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 180 mg, Potassium: 2 mg, Magnesium: 1 mg')
+            );
+        }
+
+        // Add more teas here for other health conditions
+        recommendedTeas.push(
+            generateTeaCard('Lemon Balm Tea', 'Reduces stress, supports sleep and digestion', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 70 mg, Magnesium: 1 mg, Potassium: 1 mg'),
+            generateTeaCard('Rosehip Tea', 'Boosts immune system, rich in vitamin C', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 130 mg, Vitamin C: 50 mg, Iron: 0.5 mg'),
+            generateTeaCard('Turmeric Tea', 'Anti-inflammatory, supports joint health', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 200 mg, Potassium: 3 mg, Magnesium: 2 mg'),
+            generateTeaCard('Rooibos Tea', 'Rich in antioxidants, improves skin health', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 220 mg, Calcium: 1 mg, Potassium: 2 mg'),
+            generateTeaCard('Fennel Tea', 'Improves digestion, supports heart health', '1-2 tsp in hot water for 5-10 minutes', 'Polyphenols: 160 mg, Calcium: 0.8 mg, Potassium: 1.6 mg')
+        );
+
+        // Add all recommended teas to the teaList
+        recommendedTeas.forEach(tea => {
+            teaList.innerHTML += tea;
+        });
+
+        // Show the tea recommendations section
+        document.getElementById('teaRecommendation').style.display = 'block';
+    }
+
+    // Function to create a tea card element
+    function generateTeaCard(name, benefits, servingSize, nutrition) {
+        return `
+            <div class="tea-card">
+                <h4>${name}</h4>
+                <p><strong>Benefits:</strong> ${benefits}</p>
+                <p><strong>Serving Size:</strong> ${servingSize}</p>
+                <p><strong>Nutrition Information:</strong> ${nutrition}</p>
+            </div>
+        `;
+    }
+</script>
+
+</body>
+</html>
